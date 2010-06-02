@@ -56,22 +56,54 @@ static const struct pinmux_config spi0_pins[] = {
 	{ pinmux(7), 1, 7 }
 };
 
+#ifdef CONFIG_USE_NAND
 /* EMIF-A bus pins for 8-bit NAND support on CS3 */
 static const struct pinmux_config emifa_nand_pins[] = {
-	{ pinmux(13), 1, 6 },
-	{ pinmux(13), 1, 7 },
-	{ pinmux(14), 1, 0 },
-	{ pinmux(14), 1, 1 },
-	{ pinmux(14), 1, 2 },
-	{ pinmux(14), 1, 3 },
-	{ pinmux(14), 1, 4 },
-	{ pinmux(14), 1, 5 },
-	{ pinmux(15), 1, 7 },
-	{ pinmux(16), 1, 0 },
-	{ pinmux(18), 1, 1 },
-	{ pinmux(18), 1, 4 },
-	{ pinmux(18), 1, 5 },
+	{ pinmux[13], 1, 6 },
+	{ pinmux[13], 1, 7 },
+	{ pinmux[14], 1, 0 },
+	{ pinmux[14], 1, 1 },
+	{ pinmux[14], 1, 2 },
+	{ pinmux[14], 1, 3 },
+	{ pinmux[14], 1, 4 },
+	{ pinmux[14], 1, 5 },
+	{ pinmux[14], 1, 6 },
+	{ pinmux[14], 1, 7 },
+	{ pinmux[15], 1, 0 },
+	{ pinmux[15], 1, 1 },
+	{ pinmux[15], 1, 2 },
+	{ pinmux[15], 1, 3 },
+	{ pinmux[15], 1, 4 },
+	{ pinmux[15], 1, 5 },
+	{ pinmux[15], 1, 6 },
+	{ pinmux[15], 1, 7 },
+	{ pinmux[16], 1, 0 },
+	{ pinmux[16], 1, 1 },
+	{ pinmux[16], 1, 2 },
+	{ pinmux[16], 1, 3 },
+	{ pinmux[16], 1, 4 },
+	{ pinmux[16], 1, 5 },
+	{ pinmux[16], 1, 6 },
+	{ pinmux[16], 1, 7 },
+	{ pinmux[17], 1, 0 },
+	{ pinmux[17], 1, 1 },
+	{ pinmux[17], 1, 2 },
+	{ pinmux[17], 1, 3 },
+	{ pinmux[17], 1, 4 },
+	{ pinmux[17], 1, 5 },
+	{ pinmux[17], 1, 6 },
+	{ pinmux[17], 1, 7 },
+	{ pinmux[18], 1, 0 },
+	{ pinmux[18], 1, 1 },
+	{ pinmux[18], 1, 2 },
+	{ pinmux[18], 1, 3 },
+	{ pinmux[18], 1, 4 },
+	{ pinmux[18], 1, 5 },
+	{ pinmux[18], 1, 6 },
+	{ pinmux[18], 1, 7 },
+	{ pinmux[10], 1, 0 }
 };
+#endif
 
 /* EMAC PHY interface pins */
 static const struct pinmux_config emac_pins[] = {
