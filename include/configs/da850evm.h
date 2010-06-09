@@ -27,6 +27,7 @@
  * Board
  */
 #define CONFIG_DRIVER_TI_EMAC
+#define CONFIG_USE_NAND
 
 /*
  * SoC Configuration
@@ -97,6 +98,7 @@
 #define CONFIG_SYS_CLE_MASK		0x10
 #define CONFIG_SYS_ALE_MASK		0x8
 #undef CONFIG_SYS_NAND_HW_ECC
+#define CONFIG_SYS_64BIT_VSPRINTF	/* needed for nand_util.c */
 #define CONFIG_SYS_MAX_NAND_DEVICE	1 /* Max number of NAND devices */
 #define NAND_MAX_CHIPS			1
 #endif
@@ -169,6 +171,7 @@
 #undef CONFIG_CMD_FLASH
 #undef CONFIG_CMD_IMLS
 #define CONFIG_CMD_NAND
+<<<<<<< HEAD:include/configs/da850evm.h
 
 #define CONFIG_CMD_MTDPARTS
 #define CONFIG_MTD_DEVICE
@@ -177,6 +180,9 @@
 #define CONFIG_RBTREE
 #define CONFIG_CMD_UBI
 #define CONFIG_CMD_UBIFS
+=======
+#define CONFIG_MTD_DEVICE
+>>>>>>> da850: Add support for NAND boot mode:include/configs/da850evm.h
 #endif
 
 #if !defined(CONFIG_USE_NAND) && \
