@@ -199,6 +199,28 @@ const struct pinmux_config nor_pins[] = {
 };
 #endif
 
+#ifdef CONFIG_DRIVER_TI_EMAC
+const struct pinmux_config emac_pins[] = {
+	{ pinmux[2], 8, 1 },
+	{ pinmux[2], 8, 2 },
+	{ pinmux[2], 8, 3 },
+	{ pinmux[2], 8, 4 },
+	{ pinmux[2], 8, 5 },
+	{ pinmux[2], 8, 6 },
+	{ pinmux[2], 8, 7 },
+	{ pinmux[3], 8, 0 },
+	{ pinmux[3], 8, 1 },
+	{ pinmux[3], 8, 2 },
+	{ pinmux[3], 8, 3 },
+	{ pinmux[3], 8, 4 },
+	{ pinmux[3], 8, 5 },
+	{ pinmux[3], 8, 6 },
+	{ pinmux[3], 8, 7 },
+	{ pinmux[4], 8, 0 },
+	{ pinmux[4], 8, 1 }
+};
+#endif /* CONFIG_DRIVER_TI_EMAC */
+
 static const struct pinmux_resource pinmuxes[] = {
 #ifdef CONFIG_SPI_FLASH
 	PINMUX_ITEM(spi1_pins),
@@ -209,6 +231,9 @@ static const struct pinmux_resource pinmuxes[] = {
 	PINMUX_ITEM(nand_pins),
 #elif defined(CONFIG_USE_NOR)
 	PINMUX_ITEM(nor_pins),
+#endif
+#ifdef CONFIG_DRIVER_TI_EMAC
+	PINMUX_ITEM(emac_pins),
 #endif
 };
 
