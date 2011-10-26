@@ -50,7 +50,8 @@
 static unsigned int	bus;
 static unsigned int	cs;
 static unsigned int	mode;
-static int   		bitlen;
+static int   		bitsperxfer;
+static int		bytelen;
 static uchar 		dout[MAX_SPI_BYTES];
 static uchar 		din[MAX_SPI_BYTES];
 
@@ -58,9 +59,9 @@ static uchar 		din[MAX_SPI_BYTES];
  * SPI read/write
  *
  * Syntax:
- *   spi {dev} {num_bits} {dout}
+ *   spi {dev} {bits_per_character} {dout}
  *     {dev} is the device number for controlling chip select (see TBD)
- *     {num_bits} is the number of bits to send & receive (base 10)
+ *     {bits_per_character} is the number of bits per character (base 10)
  *     {dout} is a hexadecimal string of data to send
  * The command prints out the hexadecimal string received via SPI.
  */
@@ -93,7 +94,7 @@ int do_spi (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 				mode = simple_strtoul(cp+1, NULL, 10);
 		}
 		if (argc >= 3)
-			bitlen = simple_strtoul(argv[2], NULL, 10);
+			bitsperxfer = simple_strtoul(argv[2], NULL, 10);
 		if (argc >= 4) {
 			cp = argv[3];
 			for(j = 0; *cp; j++, cp++) {
@@ -111,11 +112,12 @@ int do_spi (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 				else
 					dout[j / 2] |= tmp;
 			}
+			bytelen = j/2;
 		}
 	}
 
-	if ((bitlen < 0) || (bitlen >  (MAX_SPI_BYTES * 8))) {
-		printf("Invalid bitlen %d\n", bitlen);
+	if (bytelen > MAX_SPI_BYTES) {
+		printf("Data length too long %d\n", bytelen);
 		return 1;
 	}
 
@@ -126,12 +128,12 @@ int do_spi (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	}
 
 	spi_claim_bus(slave);
-	if(spi_xfer(slave, bitlen, dout, din,
+	if(spi_xfer(slave, bitsperxfer, bytelen, dout, din,
 				SPI_XFER_BEGIN | SPI_XFER_END) != 0) {
 		printf("Error during SPI transaction\n");
 		rcode = 1;
 	} else {
-		for(j = 0; j < ((bitlen + 7) / 8); j++) {
+		for(j = 0; j < bytelen; j++) {
 			printf("%02X", din[j]);
 		}
 		printf("\n");
@@ -147,10 +149,10 @@ int do_spi (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 U_BOOT_CMD(
 	sspi,	5,	1,	do_spi,
 	"SPI utility command",
-	"[<bus>:]<cs>[.<mode>] <bit_len> <dout> - Send and receive bits\n"
+	"[<bus>:]<cs>[.<mode>] <bits_per_character> <dout> - Send and receive bits\n"
 	"<bus>     - Identifies the SPI bus\n"
 	"<cs>      - Identifies the chip select\n"
 	"<mode>    - Identifies the SPI mode to use\n"
-	"<bit_len> - Number of bits to send (base 10)\n"
+	"<bits_per_character> - Number of bits per character (base 10)\n"
 	"<dout>    - Hexadecimal string that gets sent"
 );

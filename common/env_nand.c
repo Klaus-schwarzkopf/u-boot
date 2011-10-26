@@ -40,6 +40,7 @@
 #include <nand.h>
 #include <search.h>
 #include <errno.h>
+#include <asm/io.h>
 
 #if defined(CONFIG_CMD_SAVEENV) && defined(CONFIG_CMD_NAND)
 #define CMD_SAVEENV
@@ -359,11 +360,19 @@ void env_relocate_spec(void)
 		return;
 	}
 
-	if (readenv(CONFIG_ENV_OFFSET, (u_char *) tmp_env1))
-		puts("No Valid Environment Area found\n");
+	/* For DM365, if we boot from SD, do not read the env from NAND 
+	   Let's read the BOOCFG register
+	*/
+	if ((readl(0x01c40014)&0xE0) == 0x40) {
+		set_default_env("!booting from SD");
+		return;
+	} else {
+		if (readenv(CONFIG_ENV_OFFSET, (u_char *) tmp_env1))
+			puts("No Valid Environment Area found\n");
 
-	if (readenv(CONFIG_ENV_OFFSET_REDUND, (u_char *) tmp_env2))
-		puts("No Valid Redundant Environment Area found\n");
+		if (readenv(CONFIG_ENV_OFFSET_REDUND, (u_char *) tmp_env2))
+			puts("No Valid Redundant Environment Area found\n");
+	}
 
 	crc1_ok = (crc32(0, tmp_env1->data, ENV_SIZE) == tmp_env1->crc);
 	crc2_ok = (crc32(0, tmp_env2->data, ENV_SIZE) == tmp_env2->crc);
@@ -432,10 +441,18 @@ void env_relocate_spec (void)
 	}
 #endif
 
-	ret = readenv(CONFIG_ENV_OFFSET, (u_char *)buf);
-	if (ret) {
-		set_default_env("!readenv() failed");
+	/* For DM365, if we boot from SD, do not read the env from NAND 
+	   Let's read the BOOCFG register
+	*/
+	if ((readl(0x01c40014)&0xE0) == 0x40) {
+		set_default_env("!booting from SD");
 		return;
+	} else {
+		ret = readenv(CONFIG_ENV_OFFSET, (u_char *)buf);
+		if (ret) {
+			set_default_env("!readenv() failed");
+			return;
+		}
 	}
 
 	env_import(buf, 1);

@@ -306,6 +306,16 @@ static struct nand_ecclayout nand_davinci_4bit_layout_oobfirst = {
 #endif
 };
 
+static struct nand_ecclayout ubl_layout = {
+	.eccbytes = 40,
+    .eccpos = {6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+                   22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+                   38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+                   54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
+                   },
+    .oobfree = {{2, 4}, {16, 6}, {32, 6}, {48, 6}},
+};
+
 static void nand_davinci_4bit_enable_hwecc(struct mtd_info *mtd, int mode)
 {
 	u32 val;
@@ -348,43 +358,74 @@ static int nand_davinci_4bit_calculate_ecc(struct mtd_info *mtd,
 					   const uint8_t *dat,
 					   uint8_t *ecc_code)
 {
+	struct nand_chip *this = mtd->priv;
 	unsigned int hw_4ecc[4];
-	unsigned int i;
+	unsigned int buffer_ecc[10];
+	unsigned int ff_ecc_code[10] = {0x3f, 0x27, 0x56, 0xf5, 0x29, 0xd8, 0x61, 0xd9, 0x9d, 0x14};
+	unsigned int i,j;
 
 	nand_davinci_4bit_readecc(mtd, hw_4ecc);
 
 	/*Convert 10 bit ecc value to 8 bit */
-	for (i = 0; i < 2; i++) {
+	for (i = 0, j = 0; i < 2; i++) {
 		unsigned int hw_ecc_low = hw_4ecc[i * 2];
 		unsigned int hw_ecc_hi = hw_4ecc[(i * 2) + 1];
 
 		/* Take first 8 bits from val1 (count1=0) or val5 (count1=1) */
-		*ecc_code++ = hw_ecc_low & 0xFF;
+		buffer_ecc[j++] = hw_ecc_low & 0xFF;
 
 		/*
 		 * Take 2 bits as LSB bits from val1 (count1=0) or val5
 		 * (count1=1) and 6 bits from val2 (count1=0) or
 		 * val5 (count1=1)
 		 */
-		*ecc_code++ =
+		buffer_ecc[j++] =
 		    ((hw_ecc_low >> 8) & 0x3) | ((hw_ecc_low >> 14) & 0xFC);
 
 		/*
 		 * Take 4 bits from val2 (count1=0) or val5 (count1=1) and
 		 * 4 bits from val3 (count1=0) or val6 (count1=1)
 		 */
-		*ecc_code++ =
+		buffer_ecc[j++] =
 		    ((hw_ecc_low >> 22) & 0xF) | ((hw_ecc_hi << 4) & 0xF0);
 
 		/*
 		 * Take 6 bits from val3(count1=0) or val6 (count1=1) and
 		 * 2 bits from val4 (count1=0) or  val7 (count1=1)
 		 */
-		*ecc_code++ =
+		buffer_ecc[j++] =
 		    ((hw_ecc_hi >> 4) & 0x3F) | ((hw_ecc_hi >> 10) & 0xC0);
 
 		/* Take 8 bits from val4 (count1=0) or val7 (count1=1) */
-		*ecc_code++ = (hw_ecc_hi >> 18) & 0xFF;
+		buffer_ecc[j++] = (hw_ecc_hi >> 18) & 0xFF;
+	}
+
+	/* For the UBL we shouldn't fix the ECC code for FF pages */
+	if (this->ecc.layout == this->ecc.ubl_layout)
+	    goto finish;
+
+	/* Detect the bogus ECC code used for all 0xFF pages */
+	for (i = 0; i < 10; i++) {
+		if (buffer_ecc[i] != ff_ecc_code[i])
+			goto finish;
+	}
+
+	/* To be truely sure, check the page is full of 0xFF before doing this checksum */
+	for (i = 0; i < this->ecc.size; i++) {
+		if (dat[i] != 0xFF)
+			goto finish;
+	}
+
+	/* This is the ECC code for a page full of 0xFF, let's write it full of 0xFF */
+	for (i = 0; i < 10; i++) {
+	    ecc_code[i] = 0xFF;
+	}
+
+	return 0;
+
+finish:
+	for (i = 0; i < 10; i++) {
+	    ecc_code[i] = buffer_ecc[i];
 	}
 
 	return 0;
@@ -626,6 +667,7 @@ void davinci_nand_init(struct nand_chip *nand)
 	nand->ecc.calculate = nand_davinci_4bit_calculate_ecc;
 	nand->ecc.correct = nand_davinci_4bit_correct_data;
 	nand->ecc.hwctl = nand_davinci_4bit_enable_hwecc;
+	nand->ecc.ubl_layout = &ubl_layout;
 	nand->ecc.layout = &nand_davinci_4bit_layout_oobfirst;
 #endif
 	/* Set address of hardware control function */

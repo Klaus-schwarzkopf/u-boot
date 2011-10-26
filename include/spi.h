@@ -136,7 +136,8 @@ void spi_release_bus(struct spi_slave *slave);
  *
  * spi_xfer() interface:
  *   slave:	The SPI slave which will be sending/receiving the data.
- *   bitlen:	How many bits to write and read.
+ *   bitperxfer:	How many bits to write and read per transfer
+ *   bytelen:       How many bytes are on the dout/din array
  *   dout:	Pointer to a string of bits to send out.  The bits are
  *		held in a byte array and are sent MSB first.
  *   din:	Pointer to a string of bits that will be filled in.
@@ -144,8 +145,8 @@ void spi_release_bus(struct spi_slave *slave);
  *
  *   Returns: 0 on success, not 0 on failure
  */
-int  spi_xfer(struct spi_slave *slave, unsigned int bitlen, const void *dout,
-		void *din, unsigned long flags);
+int  spi_xfer(struct spi_slave *slave, unsigned int bitsperxfer,
+		unsigned int bytelen, const void *dout, void *din, unsigned long flags);
 
 /*-----------------------------------------------------------------------
  * Determine if a SPI chipselect is valid.
@@ -193,7 +194,7 @@ static inline int spi_w8r8(struct spi_slave *slave, unsigned char byte)
 	dout[0] = byte;
 	dout[1] = 0;
 
-	ret = spi_xfer(slave, 16, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
+	ret = spi_xfer(slave, 8, 1, dout, din, SPI_XFER_BEGIN | SPI_XFER_END);
 	return ret < 0 ? ret : din[1];
 }
 

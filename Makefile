@@ -950,6 +950,9 @@ davinci_dm355evm_config :	unconfig
 davinci_dm355leopard_config :	unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm926ejs dm355leopard davinci davinci
 
+davinci_dm365leopard_config :	unconfig
+	@$(MKCONFIG) $(@:_config=) arm arm926ejs dm365leopard davinci davinci
+
 davinci_dm365evm_config :	unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm926ejs dm365evm davinci davinci
 

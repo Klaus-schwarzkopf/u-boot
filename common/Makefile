@@ -123,6 +123,7 @@ COBJS-$(CONFIG_CMD_NAND) += cmd_nand.o
 COBJS-$(CONFIG_CMD_NET) += cmd_net.o
 COBJS-$(CONFIG_CMD_ONENAND) += cmd_onenand.o
 COBJS-$(CONFIG_CMD_OTP) += cmd_otp.o
+COBJS-$(CONFIG_PIN_MUX) += cmd_pin_mux.o
 ifdef CONFIG_PCI
 COBJS-$(CONFIG_CMD_PCI) += cmd_pci.o
 endif
@@ -134,6 +135,7 @@ COBJS-$(CONFIG_CMD_SATA) += cmd_sata.o
 COBJS-$(CONFIG_CMD_SF) += cmd_sf.o
 COBJS-$(CONFIG_CMD_SCSI) += cmd_scsi.o
 COBJS-$(CONFIG_CMD_SETEXPR) += cmd_setexpr.o
+COBJS-$(CONFIG_CMD_GPIO) += cmd_gpio.o
 COBJS-$(CONFIG_CMD_SPI) += cmd_spi.o
 COBJS-$(CONFIG_CMD_SPIBOOTLDR) += cmd_spibootldr.o
 COBJS-$(CONFIG_CMD_STRINGS) += cmd_strings.o
@@ -151,6 +153,7 @@ endif
 COBJS-$(CONFIG_CMD_XIMG) += cmd_ximg.o
 COBJS-$(CONFIG_YAFFS2) += cmd_yaffs2.o
 COBJS-$(CONFIG_VFD) += cmd_vfd.o
+COBJS-$(CONFIG_CMD_LCD_CMDS) += cmd_lcd_cmds.o
 
 # others
 COBJS-$(CONFIG_DDR_SPD) += ddr_spd.o

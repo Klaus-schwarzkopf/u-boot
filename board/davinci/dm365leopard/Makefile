@@ -1,6 +1,8 @@
 #
-# (C) Copyright 2006
+# (C) Copyright 2000, 2001, 2002
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+#
+# Copyright (C) 2007 Sergey Kubushyn <ksi@koi8.net>
 #
 # See file CREDITS for list of people who contributed to this
 # project.
@@ -23,24 +25,17 @@
 
 include $(TOPDIR)/config.mk
 
-ifneq ($(OBJTREE),$(SRCTREE))
-$(shell mkdir -p $(obj)board/$(VENDOR)/common)
-endif
+LIB	= $(obj)lib$(BOARD).o
 
-LIB	= $(obj)lib$(VENDOR).o
+COBJS	:= $(BOARD).o
+SOBJS	:=
 
-COBJS	:= misc.o
-
-COBJS-y :=
-COBJS-$(CONFIG_PIN_MUX) += davinci_pin_mux.o
-
-COBJS   += $(COBJS-y)
 SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
 OBJS	:= $(addprefix $(obj),$(COBJS))
 SOBJS	:= $(addprefix $(obj),$(SOBJS))
 
 $(LIB):	$(obj).depend $(OBJS) $(SOBJS)
-	$(call cmd_link_o_target, $(OBJS) $(SOBJS))
+	$(AR) $(ARFLAGS) $@ $(OBJS) $(SOBJS)
 
 clean:
 	rm -f $(SOBJS) $(OBJS)
