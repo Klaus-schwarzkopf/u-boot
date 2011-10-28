@@ -27,7 +27,7 @@
 #define CONFIG_SKIP_LOWLEVEL_INIT	/* U-Boot is a 3rd stage loader */
 #define CONFIG_SYS_NO_FLASH		/* that is, no *NOR* flash */
 #define CONFIG_SYS_CONSOLE_INFO_QUIET
-#define	CONFIG_DISPLAY_CPUINFO
+//#define	CONFIG_DISPLAY_CPUINFO
 
 /* SoC Configuration */
 #define CONFIG_ARM926EJS				/* arm926ejs CPU */
@@ -118,8 +118,8 @@
 #define PINMUX4_USBDRVBUS_BITSET         0x2000
 
 /* USB Configuration */
-#define CONFIG_USB_DAVINCI
-#define CONFIG_MUSB_HCD
+//#define CONFIG_USB_DAVINCI
+//#define CONFIG_MUSB_HCD
 
 #ifdef CONFIG_USB_DAVINCI
 #define CONFIG_CMD_USB         /* include support for usb      */
@@ -209,24 +209,19 @@
 #define CONFIG_CMD_ENV
 #endif
 
-#define CONFIG_BOOTDELAY	3
+#define CONFIG_BOOTDELAY	0
 #define CONFIG_BOOTARGS \
-		"console=ttyS0,115200n8 " \
-		"root=/dev/mmcblk0p2 rw rootwait ip=off"
+		"mem=80M console=ttyS0,115200n8 " \
+		"ubi.mtd=2 root=ubi0:rootfs rootfstype=ubifs ${mtdparts} " \
+		"ip=off davinci_enc_mngr.ch0_output=LCD vpfe_capture.interface=1 video=davincifb:vid1=off lpj=739328"
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"loadaddr=0x82000000\0" \
-	"loadbootenv=fatload mmc 0 ${loadaddr} uEnv.txt\0" \
-	"importbootenv=echo Importing environment from mmc ...; env import -t ${loadaddr} ${filesize}\0" \
-	"loaduimage=fatload mmc 0 ${loadaddr} uImage\0"
+	"loadaddr=0x82000000\0" 
 
 #define CONFIG_BOOTCOMMAND \
 	"if mmc rescan 0 ; then " \
-		"if run loadbootenv ; then " \
-			"run importbootenv ; " \
-			"if test -n ${uenvcmd} ; then " \
-				"run uenvcmd; " \
-			"fi ;" \
+		"if fatload mmc 0 ${loadaddr} flash_dm365_leopardboard.src; then " \
+			"source ${loadaddr} ; " \
 		"fi ;" \
 	"fi"
 
@@ -258,7 +253,7 @@
 
 #ifdef CONFIG_SYS_NAND_LARGEPAGE
 /*  Use same layout for 128K/256K blocks; allow some bad blocks */
-#define PART_BOOT		"2m(bootloader)ro,"
+#define PART_BOOT		"4m(bootloader)ro,"
 #else
 /* Assume 16K erase blocks; allow a few bad ones. */
 #define PART_BOOT		"512k(bootloader)ro,"
