@@ -27,7 +27,7 @@
 #define CONFIG_SKIP_LOWLEVEL_INIT	/* U-Boot is a 3rd stage loader */
 #define CONFIG_SYS_NO_FLASH		/* that is, no *NOR* flash */
 #define CONFIG_SYS_CONSOLE_INFO_QUIET
-//#define	CONFIG_DISPLAY_CPUINFO
+#define	CONFIG_DISPLAY_CPUINFO
 
 /* SoC Configuration */
 #define CONFIG_ARM926EJS				/* arm926ejs CPU */
@@ -118,8 +118,8 @@
 #define PINMUX4_USBDRVBUS_BITSET         0x2000
 
 /* USB Configuration */
-//#define CONFIG_USB_DAVINCI
-//#define CONFIG_MUSB_HCD
+#define CONFIG_USB_DAVINCI
+#define CONFIG_MUSB_HCD
 
 #ifdef CONFIG_USB_DAVINCI
 #define CONFIG_CMD_USB         /* include support for usb      */
@@ -209,7 +209,7 @@
 #define CONFIG_CMD_ENV
 #endif
 
-#define CONFIG_BOOTDELAY	0
+#define CONFIG_BOOTDELAY	3
 #define CONFIG_BOOTARGS \
 		"mem=80M console=ttyS0,115200n8 " \
 		"ubi.mtd=2 root=ubi0:rootfs rootfstype=ubifs ${mtdparts} " \
